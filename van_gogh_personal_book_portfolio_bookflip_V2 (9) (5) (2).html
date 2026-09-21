@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hành Trình Ngôi Sao Xanh - Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display & Be Vietnam Pro -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Protest+Revolution&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: #06162d;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #painted-sky {
+            position: fixed;
+            inset: -3%;
+            width: 106%;
+            height: 106%;
+            z-index: 0;
+            pointer-events: none;
+            filter: saturate(1.18) contrast(1.05);
+            animation: sky-breathe 18s ease-in-out infinite alternate;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at center, transparent 24%, rgba(2,8,23,.18) 67%, rgba(2,6,23,.66) 100%),
+                linear-gradient(to bottom, rgba(3,17,43,.08), rgba(2,8,23,.32));
+        }
+        @keyframes sky-breathe {
+            from { transform: scale(1) translate3d(0,0,0); }
+            to { transform: scale(1.025) translate3d(-.4%,.25%,0); }
+        }
+        
+        .font-serif-custom {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Starry Night floating background particles */
+        .star {
+            position: absolute;
+            background: #fde047;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite alternate;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        @keyframes twinkle {
+            0% { transform: scale(0.8); opacity: 0.3; box-shadow: 0 0 2px #eab308; }
+            100% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px #fde047, 0 0 20px #eab308; }
+        }
+
+        /* Book wrapper & perspective */
+        .book-container {
+            perspective: 2000px;
+            width: 100%;
+            max-width: 1000px;
+            height: 620px;
+            margin: auto;
+        }
+
+        .book {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        /* Page styling */
+        .page {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            top: 0;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1), box-shadow 0.5s ease;
+            background: #f0f7ff; /* Pastel light blue */
+            color: #1e3a8a;
+            box-shadow: inset 0 0 30px rgba(14, 116, 144, 0.1);
+            user-select: none;
+            overflow: hidden;
+            backface-visibility: hidden;
+        }
+
+        .page.left {
+            left: 0;
+            transform-origin: right center;
+            border-radius: 16px 0 0 16px;
+            border-right: 2px solid rgba(14, 116, 144, 0.15);
+        }
+
+        .page.right {
+            left: 50%;
+            transform-origin: left center;
+            border-radius: 0 16px 16px 0;
+            border-left: 2px solid rgba(14, 116, 144, 0.15);
+        }
+
+        /* Flipping page states */
+        .page.fipping {
+            pointer-events: none;
+        }
+
+        /* Custom scrollbar for page content */
+        .page-content {
+            height: 100%;
+            overflow: hidden;
+            padding: 2.25rem 2rem;
+            box-sizing: border-box;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* Nội dung các section được co gọn để luôn nằm vừa một trang sách. */
+        .page-content > .space-y-6 { gap: 1.15rem; }
+        .page-content > .space-y-5 { gap: 1rem; }
+        .page-content > .space-y-4 { gap: .8rem; }
+        .page-content::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        /* Van Gogh Brushstroke card backgrounds */
+        .vangogh-card {
+            background: linear-gradient(135deg, rgba(224, 242, 254, 0.9) 0%, rgba(186, 230, 253, 0.7) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.08);
+            transition: all 0.3s ease;
+        }
+        .vangogh-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.15);
+            border-color: rgba(56, 189, 248, 0.6);
+        }
+
+        /* Cover special styling */
+        .book-cover {
+            background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #1e40af 100%);
+            color: #fef08a;
+            position: relative;
+        }
+        .book-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 30%, rgba(253, 224, 71, 0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .book-container {
+                height: 75vh;
+                max-width: 95vw;
+            }
+            .page-content {
+                padding: 1.5rem 1rem;
+            }
+        }
+    
+/* ===== REALISTIC BOOK FLIP OVERRIDES ===== */
+.book-container {
+    perspective: 2400px;
+    transform-style: preserve-3d;
+    position: relative;
+}
+.book {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: none;
+}
+
+/* Each .book-sheet is a physical sheet: front = right page, back = left page. */
+.book-sheet {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform-origin: left center;
+    transition: transform 1.05s cubic-bezier(.645,.045,.355,1);
+    cursor: pointer;
+    will-change: transform;
+}
+.book-sheet.flipped {
+    transform: rotateY(-180deg);
+}
+.book-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: #f0f7ff;
+    color: #1e3a8a;
+    box-shadow: inset 0 0 30px rgba(14,116,144,.10);
+    border-radius: 0 16px 16px 0;
+    border-left: 2px solid rgba(14,116,144,.15);
+}
+.book-face.back {
+    transform: rotateY(180deg);
+    border-radius: 16px 0 0 16px;
+    border-left: 0;
+    border-right: 2px solid rgba(14,116,144,.15);
+}
+
+/* Subtle paper shading near the spine and page edge. */
+.book-face::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+    background: linear-gradient(90deg,
+        rgba(15,23,42,.16) 0,
+        rgba(255,255,255,0) 10%,
+        rgba(255,255,255,0) 88%,
+        rgba(15,23,42,.06) 100%);
+    opacity: .55;
+}
+.book-face.back::before {
+    background: linear-gradient(90deg,
+        rgba(15,23,42,.06) 0,
+        rgba(255,255,255,0) 12%,
+        rgba(255,255,255,0) 90%,
+        rgba(15,23,42,.16) 100%);
+}
+
+.book-face .page-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Give the book a visible center crease and a soft drop shadow. */
+.book-container::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 1%;
+    bottom: 1%;
+    width: 18px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 50;
+    background: linear-gradient(90deg,
+        rgba(15,23,42,0),
+        rgba(15,23,42,.10),
+        rgba(255,255,255,.22),
+        rgba(15,23,42,.08),
+        rgba(15,23,42,0));
+    opacity: .5;
+}
+.book-container {
+    filter: drop-shadow(0 24px 30px rgba(0,0,0,.32));
+}
+
+@media (max-width: 768px) {
+    .book-container { height: 75vh; }
+    .book-face .page-content { padding: 1.25rem .9rem; }
+}
+
+    
+/* ===== FINAL FLIPBOOK FIXES ===== */
+.book-face.book-cover {
+    background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 50%, #1e40af 100%);
+    color: #fef08a;
+    position: absolute;
+}
+.book-face.book-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 70% 30%, rgba(253,224,71,.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+.book-face.book-cover .relative { position: relative; z-index: 1; }
+.book-face.book-cover .page-content { padding: 0; }
+
+/* Realistic warm leather cover. */
+.book-face.book-cover {
+    background:
+        linear-gradient(90deg, rgba(35,15,7,.62) 0 4%, transparent 4% 96%, rgba(30,12,5,.68) 96%),
+        repeating-linear-gradient(17deg, rgba(255,255,255,.018) 0 1px, rgba(0,0,0,.025) 1px 3px),
+        radial-gradient(ellipse at 68% 22%, rgba(211,154,82,.22), transparent 38%),
+        linear-gradient(145deg, #3c1e0f 0%, #6f3d20 46%, #4a2412 100%);
+    color: #f8e7b0;
+    border: 3px solid #2a1209;
+    box-shadow:
+        inset 0 0 0 2px rgba(222,177,91,.50),
+        inset 0 0 0 8px rgba(46,20,9,.40),
+        inset 0 0 36px rgba(16,6,2,.64),
+        0 14px 34px rgba(0,0,0,.38);
+}
+.book-face.book-cover::before {
+    opacity: 1;
+    background:
+        linear-gradient(90deg, rgba(18,7,3,.68), transparent 8%, transparent 92%, rgba(18,7,3,.45)),
+        repeating-radial-gradient(ellipse at 35% 45%, transparent 0 7px, rgba(255,227,171,.025) 8px 9px);
+}
+.book-face.book-cover::after {
+    content: '';
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(239,201,117,.58);
+    outline: 1px solid rgba(53,23,9,.75);
+    outline-offset: 5px;
+    background: radial-gradient(circle at 72% 24%, rgba(255,216,120,.10), transparent 48%);
+    box-shadow: inset 0 0 18px rgba(255,208,115,.06);
+    pointer-events: none;
+}
+.book-face.book-cover .text-amber-200,
+.book-face.book-cover .text-amber-300 { color: #f5d88b !important; }
+.book-face.book-cover .text-sky-100,
+.book-face.book-cover .text-sky-200\/80,
+.book-face.book-cover .text-sky-300\/80 { color: #f4e7c3 !important; }
+.book-face.book-cover h4 {
+    color: #ffe6a1 !important;
+    text-shadow: 0 2px 2px rgba(25,9,3,.9), 0 0 16px rgba(241,196,92,.18);
+    letter-spacing: .04em;
+}
+.book-face.book-cover p { color: #f3e4c2 !important; }
+.book-face.book-cover span { color: #ead7ab !important; }
+.book-face.book-cover i { color: #f3cf75 !important; filter: drop-shadow(0 2px 2px rgba(26,9,2,.75)); }
+.book-face.book-cover .border-amber-300\/30,
+.book-face.book-cover .border-sky-600\/50 { border-color: rgba(231,190,99,.36) !important; }
+.book-face.book-cover .bg-amber-400\/20 {
+    background: rgba(238,190,91,.12) !important;
+    box-shadow: inset 0 0 16px rgba(0,0,0,.28), 0 0 0 1px rgba(245,216,139,.22);
+}
+.book-face.cover-lining {
+    background:
+        linear-gradient(90deg, rgba(29,11,5,.72), transparent 9%, transparent 91%, rgba(25,9,4,.66)),
+        repeating-linear-gradient(24deg, rgba(255,235,195,.018) 0 1px, rgba(28,10,4,.035) 1px 4px),
+        radial-gradient(ellipse at 34% 25%, rgba(205,148,83,.16), transparent 43%),
+        linear-gradient(145deg, #32170c 0%, #56301a 48%, #3b1c0e 100%);
+    border-color: rgba(106,58,27,.65);
+    box-shadow:
+        inset 0 0 0 2px rgba(223,177,99,.20),
+        inset 0 0 0 10px rgba(37,14,6,.27),
+        inset 0 0 42px rgba(15,5,2,.58);
+}
+.book-face.cover-lining::after {
+    content: '';
+    position: absolute;
+    inset: 15px;
+    border: 1px solid rgba(222,176,93,.24);
+    outline: 1px solid rgba(27,10,4,.68);
+    outline-offset: 4px;
+    background:
+        repeating-radial-gradient(ellipse at 40% 35%, transparent 0 8px, rgba(255,229,176,.018) 9px 10px),
+        radial-gradient(circle at 68% 28%, rgba(218,159,87,.06), transparent 46%);
+    opacity: .88;
+    pointer-events: none;
+}
+
+/* Warm ink palette for every interior page, matching the leather binding. */
+.book-face:not(.book-cover):not(.cover-lining) { color: #4b2b19; }
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-900,
+.book-face:not(.book-cover):not(.cover-lining) .text-blue-600 { color: #4a2816 !important; }
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-800,
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-800\/80,
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-800\/90 { color: #62402a !important; }
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-700 { color: #795139 !important; }
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-600,
+.book-face:not(.book-cover):not(.cover-lining) .text-sky-500 { color: #9a6635 !important; }
+.book-face:not(.book-cover):not(.cover-lining) .text-amber-500,
+.book-face:not(.book-cover):not(.cover-lining) .text-amber-700 { color: #b67a24 !important; }
+.book-face:not(.book-cover):not(.cover-lining) .border-sky-200,
+.book-face:not(.book-cover):not(.cover-lining) .border-sky-300 { border-color: rgba(151,101,48,.28) !important; }
+.book-face:not(.book-cover):not(.cover-lining) .bg-sky-200,
+.book-face:not(.book-cover):not(.cover-lining) .bg-sky-200\/50,
+.book-face:not(.book-cover):not(.cover-lining) .bg-sky-200\/60,
+.book-face:not(.book-cover):not(.cover-lining) .bg-sky-200\/70 {
+    background-color: rgba(218,184,126,.26) !important;
+}
+.book-face:not(.book-cover):not(.cover-lining) .vangogh-card {
+    background: linear-gradient(135deg, rgba(255,250,236,.92), rgba(237,218,181,.66));
+    border-color: rgba(157,106,52,.26);
+}
+
+/* ===== AGED BOOK: the exposed cover is older than the protected pages ===== */
+.book-face:not(.book-cover):not(.cover-lining) {
+    font-family: 'Lora', Georgia, serif;
+    background:
+        radial-gradient(circle at 11% 9%, rgba(121,77,35,.075) 0 1px, transparent 2px),
+        radial-gradient(circle at 88% 83%, rgba(110,68,31,.055) 0 1.4px, transparent 2.5px),
+        radial-gradient(ellipse at center, rgba(255,252,232,.96) 0%, rgba(244,230,194,.98) 72%, rgba(218,190,139,.96) 100%);
+    background-size: 31px 37px, 43px 47px, 100% 100%;
+    box-shadow:
+        inset 18px 0 30px rgba(83,50,24,.11),
+        inset -12px 0 22px rgba(95,58,27,.08),
+        inset 0 0 22px rgba(114,71,34,.13);
+}
+.book-face:not(.book-cover):not(.cover-lining)::before {
+    z-index: 0;
+    opacity: .48;
+    background:
+        repeating-linear-gradient(7deg, transparent 0 5px, rgba(91,58,31,.025) 6px, transparent 7px),
+        linear-gradient(90deg, rgba(84,49,22,.16), transparent 8%, transparent 91%, rgba(91,54,25,.10));
+}
+.book-face:not(.book-cover):not(.cover-lining)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .38;
+    background:
+        radial-gradient(circle at 5% 7%, rgba(112,66,27,.16) 0 2px, transparent 9px),
+        radial-gradient(circle at 96% 17%, rgba(112,66,27,.10) 0 1px, transparent 7px),
+        radial-gradient(circle at 92% 92%, rgba(112,66,27,.13) 0 2px, transparent 11px),
+        radial-gradient(circle at 16% 88%, rgba(112,66,27,.08) 0 1px, transparent 8px);
+}
+.book-face:not(.book-cover):not(.cover-lining) .page-content {
+    z-index: 2;
+    letter-spacing: .005em;
+}
+.book-face:not(.book-cover):not(.cover-lining) h3,
+.book-face:not(.book-cover):not(.cover-lining) h4,
+.book-face:not(.book-cover):not(.cover-lining) .font-serif-custom {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: .018em;
+}
+
+/* Subtle wear on the lining; protected, so it remains cleaner than the outside. */
+.book-face.cover-lining {
+    filter: sepia(.12) saturate(.90);
+}
+.book-face.cover-lining::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .26;
+    background:
+        linear-gradient(90deg, rgba(18,6,2,.40), transparent 10%, transparent 92%, rgba(18,6,2,.25)),
+        radial-gradient(circle at 8% 8%, rgba(231,190,119,.14), transparent 17%);
+}
+
+/* The outer leather carries stronger age, scratches and worn corners. */
+.book-face.book-cover {
+    filter: sepia(.20) saturate(.86) contrast(1.04);
+    background-blend-mode: multiply, soft-light, screen, normal;
+}
+.book-face.book-cover::before {
+    opacity: .82;
+    background:
+        linear-gradient(132deg, transparent 0 18%, rgba(246,211,142,.10) 18.2%, transparent 18.8%),
+        linear-gradient(23deg, transparent 0 67%, rgba(18,6,2,.24) 67.3%, transparent 68%),
+        repeating-linear-gradient(171deg, transparent 0 17px, rgba(248,218,155,.035) 18px, transparent 19px),
+        radial-gradient(circle at 2% 3%, rgba(225,177,101,.24), transparent 14%),
+        radial-gradient(circle at 98% 96%, rgba(20,6,2,.50), transparent 18%),
+        linear-gradient(90deg, rgba(18,7,3,.72), transparent 9%, transparent 91%, rgba(18,7,3,.52));
+}
+.book-face.book-cover::after {
+    border-color: rgba(211,166,81,.46);
+    outline-color: rgba(42,17,7,.88);
+    box-shadow:
+        inset 0 0 18px rgba(255,208,115,.045),
+        0 0 0 1px rgba(246,210,137,.05);
+}
+.book-face.book-cover h4,
+.book-face.book-cover span,
+.book-face.book-cover p,
+.book-face.book-cover i {
+    filter: saturate(.82);
+}
+
+/* ===== WEATHERED MANUAL PAPER: faded copy, worn edges and soft wrinkles ===== */
+.book-face:not(.book-cover):not(.cover-lining) {
+    background:
+        radial-gradient(circle at 4% 9%, rgba(45,37,26,.16) 0 .7px, transparent 1.8px),
+        radial-gradient(circle at 95% 14%, rgba(45,37,26,.12) 0 .8px, transparent 2px),
+        radial-gradient(circle at 7% 88%, rgba(45,37,26,.10) 0 1px, transparent 2.4px),
+        radial-gradient(circle at 91% 91%, rgba(45,37,26,.14) 0 .8px, transparent 2.2px),
+        linear-gradient(103deg, transparent 0 47%, rgba(74,61,42,.045) 48%, rgba(255,255,255,.13) 49%, transparent 51%),
+        linear-gradient(7deg, transparent 0 65%, rgba(72,59,41,.035) 66%, rgba(255,255,255,.10) 67%, transparent 69%),
+        radial-gradient(ellipse at 50% 42%, #f4efdf 0%, #e9e1cd 72%, #cfc1a4 100%);
+    background-size: 23px 29px, 31px 37px, 41px 47px, 37px 43px, 100% 100%, 100% 100%, 100% 100%;
+    box-shadow:
+        inset 22px 0 34px rgba(53,42,27,.14),
+        inset -17px 0 28px rgba(53,42,27,.11),
+        inset 0 15px 22px rgba(76,60,39,.07),
+        inset 0 -18px 25px rgba(61,47,30,.12);
+}
+.book-face:not(.book-cover):not(.cover-lining)::before {
+    opacity: .62;
+    background:
+        radial-gradient(ellipse at 0% 6%, rgba(38,30,20,.32), transparent 10%),
+        radial-gradient(ellipse at 100% 94%, rgba(38,30,20,.28), transparent 12%),
+        repeating-linear-gradient(176deg, transparent 0 13px, rgba(43,35,25,.018) 14px, transparent 15px),
+        linear-gradient(90deg, rgba(48,36,22,.21), transparent 8%, transparent 92%, rgba(48,36,22,.15));
+}
+.book-face:not(.book-cover):not(.cover-lining)::after {
+    opacity: .58;
+    background:
+        radial-gradient(circle at 2% 18%, rgba(35,29,22,.28) 0 .8px, transparent 7px),
+        radial-gradient(circle at 98% 31%, rgba(35,29,22,.23) 0 1px, transparent 9px),
+        radial-gradient(circle at 4% 72%, rgba(35,29,22,.18) 0 .7px, transparent 8px),
+        radial-gradient(circle at 96% 84%, rgba(35,29,22,.22) 0 1px, transparent 10px),
+        repeating-linear-gradient(91deg, transparent 0 31px, rgba(49,39,27,.018) 32px, transparent 33px);
+}
+.book-face:not(.book-cover):not(.cover-lining) .page-content::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    pointer-events: none;
+    opacity: .34;
+    mix-blend-mode: multiply;
+    background:
+        linear-gradient(116deg, transparent 0 26%, rgba(77,63,43,.10) 26.4%, rgba(255,255,255,.26) 27%, transparent 28.2%),
+        linear-gradient(72deg, transparent 0 72%, rgba(77,63,43,.075) 72.4%, rgba(255,255,255,.20) 73%, transparent 74.2%),
+        radial-gradient(ellipse at 14% 52%, rgba(54,43,29,.08), transparent 16%),
+        radial-gradient(ellipse at 88% 22%, rgba(255,255,255,.16), transparent 18%);
+}
+.book-face:not(.book-cover):not(.cover-lining) .page-content {
+    text-shadow: 0 .25px 0 rgba(42,31,20,.18);
+}
+.book-face:not(.book-cover):not(.cover-lining) h3,
+.book-face:not(.book-cover):not(.cover-lining) h4,
+.book-face:not(.book-cover):not(.cover-lining) .page-content > div:first-child {
+    font-family: 'Special Elite', 'Courier New', monospace;
+    letter-spacing: .012em;
+}
+.book-face:not(.book-cover):not(.cover-lining) .page-content > div:first-child {
+    border-bottom-color: rgba(72,54,33,.28) !important;
+}
+
+/* ===== HEAVIER OUTER-COVER PATINA ===== */
+.book-face.book-cover {
+    filter: sepia(.42) saturate(.62) brightness(.78) contrast(1.13);
+    border-color: #1d0b05;
+    box-shadow:
+        inset 0 0 0 2px rgba(191,142,68,.34),
+        inset 0 0 0 9px rgba(30,11,5,.63),
+        inset 0 0 52px rgba(8,2,1,.82),
+        inset 18px 0 25px rgba(8,2,1,.42),
+        0 17px 38px rgba(0,0,0,.52);
+}
+.book-face.book-cover::before {
+    opacity: .94;
+    background:
+        radial-gradient(ellipse at 0% 0%, rgba(221,174,102,.42) 0 3%, rgba(95,50,24,.28) 8%, transparent 18%),
+        radial-gradient(ellipse at 100% 0%, rgba(207,157,88,.34) 0 2%, rgba(87,42,19,.30) 8%, transparent 17%),
+        radial-gradient(ellipse at 0% 100%, rgba(201,149,82,.34) 0 3%, rgba(73,34,16,.34) 10%, transparent 19%),
+        radial-gradient(ellipse at 100% 100%, rgba(216,163,91,.40) 0 3%, rgba(65,28,13,.42) 9%, transparent 19%),
+        linear-gradient(127deg, transparent 0 19%, rgba(238,196,124,.16) 19.15%, rgba(25,8,3,.24) 19.55%, transparent 20.1%),
+        linear-gradient(21deg, transparent 0 61%, rgba(19,6,2,.37) 61.25%, rgba(225,177,106,.09) 61.7%, transparent 62.2%),
+        repeating-linear-gradient(174deg, transparent 0 21px, rgba(245,211,151,.055) 22px, rgba(25,8,3,.09) 23px, transparent 24px),
+        linear-gradient(90deg, rgba(10,3,1,.82), transparent 12%, transparent 89%, rgba(12,3,1,.68));
+}
+.book-face.book-cover::after {
+    border-color: rgba(185,137,65,.32);
+    outline-color: rgba(22,7,2,.95);
+    box-shadow:
+        inset 0 0 16px rgba(243,195,111,.025),
+        0 0 0 1px rgba(237,191,111,.035);
+}
+.book-face.book-cover .cover-age-marks {
+    position: absolute;
+    inset: 0;
+    z-index: 22;
+    pointer-events: none;
+    opacity: .88;
+    background:
+        radial-gradient(ellipse at 18% 27%, rgba(13,4,1,.22), transparent 13%),
+        radial-gradient(ellipse at 76% 72%, rgba(8,2,1,.26), transparent 15%),
+        radial-gradient(ellipse at 58% 9%, rgba(222,169,92,.10), transparent 12%),
+        linear-gradient(166deg, transparent 0 28%, rgba(235,190,116,.20) 28.15%, rgba(18,5,2,.22) 28.45%, transparent 28.9%),
+        linear-gradient(12deg, transparent 0 78%, rgba(16,5,2,.30) 78.15%, rgba(231,182,105,.10) 78.6%, transparent 79.1%);
+}
+.book-face.book-cover .cover-age-marks::before {
+    content: '';
+    position: absolute;
+    left: 7%;
+    right: 11%;
+    top: 13%;
+    height: 2px;
+    transform: rotate(-2deg);
+    background: linear-gradient(90deg, transparent, rgba(241,202,137,.20) 18%, rgba(18,5,2,.50) 34%, transparent 58%, rgba(228,181,108,.15), transparent);
+    box-shadow:
+        22px 82px 0 rgba(25,7,2,.18),
+        -8px 221px 0 rgba(236,190,118,.10),
+        44px 376px 0 rgba(20,6,2,.28);
+}
+.book-face.book-cover > .relative { z-index: 30; }
+.book-face.book-cover h4,
+.book-face.book-cover span,
+.book-face.book-cover p {
+    opacity: .86;
+    text-shadow: 0 2px 2px rgba(12,3,1,.95), 1px 0 rgba(255,225,165,.06);
+}
+
+/* Protest Revolution is used only on the inner paper pages; both outer covers keep their original type. */
+.book-face:not(.book-cover):not(.cover-lining),
+.book-face:not(.book-cover):not(.cover-lining) *:not(i) {
+    font-family: 'Protest Revolution', 'Noto Serif', Georgia, serif !important;
+}
+.book-face:not(.book-cover):not(.cover-lining) .page-content {
+    line-height: 1.28;
+    letter-spacing: .01em;
+}
+
+/* Match the front-cover typography with the inner pages. */
+.book-face.book-cover:not(.back),
+.book-face.book-cover:not(.back) *:not(i) {
+    font-family: 'Protest Revolution', 'Noto Serif', Georgia, serif !important;
+}
+
+/* Text stays selectable; the remaining page surface stays draggable. */
+.page-content p,
+.page-content h1,
+.page-content h2,
+.page-content h3,
+.page-content h4,
+.page-content h5,
+.page-content h6,
+.page-content span,
+.page-content li,
+.page-content strong,
+.page-content em,
+.page-content blockquote,
+.page-content code,
+.page-content a {
+    cursor: text;
+    user-select: text;
+    -webkit-user-select: text;
+    touch-action: auto;
+}
+.page-content a { cursor: pointer; }
+.page-content ::selection {
+    color: #3e2416;
+    background: rgba(214, 166, 77, .38);
+}
+
+/* Profile photo keeps its original colors; only the frame matches the old-book design. */
+.profile-photo-frame {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #ead8ad;
+    border: 3px solid rgba(143, 91, 42, .58);
+    box-shadow:
+        0 0 0 4px rgba(233, 210, 160, .78),
+        0 4px 12px rgba(78, 43, 22, .24),
+        inset 0 0 7px rgba(72, 39, 20, .18);
+}
+.profile-photo-frame img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    transform: none;
+    filter: none;
+}
+.profile-photo-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 244, 211, .42);
+}
+
+/* ===== V2: CLOSED BOOK, DRAG FLIP & MOBILE LANDSCAPE ===== */
+.book-container { transition: transform .75s cubic-bezier(.22,.8,.22,1), filter .75s ease; touch-action: pan-y; }
+.book-container.closed { transform: scale(.70); filter: drop-shadow(0 20px 24px rgba(0,0,0,.34)); }
+.book-container.closed::after { opacity: 0; }
+.book-container.closed .book { transform: translateX(-25%); }
+.book-container.opened .book { transform: translateX(0); }
+.book { transition: transform .75s cubic-bezier(.22,.8,.22,1); }
+.book-sheet.dragging { transition: none !important; cursor: grabbing; }
+.book-sheet:not(.dragging) { cursor: grab; }
+.book-sheet.dragging .book-face { box-shadow: inset 0 0 34px rgba(14,116,144,.16), 0 12px 28px rgba(0,0,0,.22); }
+.orientation-lock { display:none; position:fixed; inset:0; z-index:9999; place-items:center; padding:28px; background:linear-gradient(135deg,#071a2e,#0c4a6e 55%,#172554); color:#e0f2fe; text-align:center; }
+.orientation-card { max-width:340px; padding:28px 24px; border:1px solid rgba(125,211,252,.35); border-radius:24px; background:rgba(8,47,73,.72); box-shadow:0 24px 60px rgba(0,0,0,.35); }
+.rotate-phone { animation:rotate-phone 1.8s ease-in-out infinite; }
+@keyframes rotate-phone { 0%,25% { transform:rotate(0deg); } 65%,100% { transform:rotate(90deg); } }
+@media (max-width:900px) and (orientation:portrait) { .orientation-lock { display:grid; } }
+@media (max-height:520px) and (orientation:landscape) {
+    body { padding:8px; }
+    header { margin:0 0 6px !important; }
+    header h1 { font-size:1.25rem !important; }
+    header p, header > div { display:none !important; }
+    .book-container { width:min(86vw,820px); height:min(70vh,430px); }
+    nav { margin-top:7px !important; padding:6px 16px !important; }
+    .book-face .page-content { padding:1rem .85rem; }
+}
+
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4 md:p-8">
+
+    <canvas id="painted-sky" aria-hidden="true"></canvas>
+
+    <div class="orientation-lock" aria-live="polite">
+        <div class="orientation-card">
+            <i class="fa-solid fa-mobile-screen-button rotate-phone text-5xl text-amber-300 mb-5"></i>
+            <h2 class="font-serif-custom text-2xl font-bold mb-2">Hãy xoay ngang điện thoại</h2>
+            <p class="text-sm text-sky-200/80">Cuốn sách cần màn hình ngang để hiển thị trọn hai trang.</p>
+        </div>
+    </div>
+
+    <div id="starry-bg" class="fixed inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <header class="text-center z-10 mb-6 mt-2">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-900/60 border border-sky-400/30 text-sky-200 text-xs md:text-sm mb-2 backdrop-blur-md shadow-lg">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300 animate-pulse"></i>
+            <span>Triển lãm Nghệ thuật & Hồ sơ Cá nhân</span>
+            <i class="fa-solid fa-star text-amber-300"></i>
+        </div>
+        <h1 class="text-2xl md:text-4xl font-serif-custom font-bold text-sky-100 tracking-wide drop-shadow-md">
+            Hành Trình Ngôi Sao Xanh
+        </h1>
+        <p class="text-xs md:text-sm text-sky-300/80 italic mt-1 font-serif-custom">"Cảm hứng từ nét cọ Vincent van Gogh"</p>
+    </header>
+
+    <main id="book-container" class="book-container closed z-10 rounded-2xl">
+        <div id="book" class="book">
+            
+            <!-- PAGE 1: Front Cover (Right side when closed, or Spread 1) -->
+            <!-- We will manage pages dynamically with JS for real book flip -->
+            <div id="page-0" class="page right book-cover flex flex-col justify-between p-8 md:p-12 shadow-2xl cursor-pointer" onclick="nextPage()">
+                <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fde047_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="relative z-10 text-right">
+                    <span class="text-xs uppercase tracking-widest text-amber-200 font-semibold border-b border-amber-300/30 pb-1">Thông tin của mình</span>
+                </div>
+                <div class="relative z-10 my-auto text-center py-6">
+                    <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-amber-400/20 border-2 border-amber-300/60 flex items-center justify-center shadow-inner animate-bounce">
+                        <i class="fa-solid fa-palette text-3xl text-amber-300"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-serif-custom font-bold text-amber-200 mb-3 drop-shadow-md">ĐÀO THỊ THÙY GIANG</h2>
+                    <h3 class="text-xl md:text-2xl font-serif-custom text-sky-100 font-light">"89521"</h3>
+                    <div class="w-16 h-0.5 bg-amber-300 mx-auto my-4 opacity-75"></div>
+                    <p class="text-xs md:text-sm text-sky-200/90 italic max-w-xs mx-auto">"Đêm đầy sao không chỉ ở trên bầu trời, mà còn ẩn chứa trong khát vọng của tuổi trẻ."</p>
+                </div>
+                <div class="relative z-10 flex justify-between items-center text-xs text-sky-300/80 border-t border-sky-600/50 pt-4">
+                    <span>Van Gogh</span>
+                    <span class="hover:text-amber-300 transition-colors flex items-center gap-1 font-semibold">Chạm để mở sách <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <nav class="z-10 mt-6 flex items-center gap-4 bg-sky-950/70 border border-sky-500/30 px-6 py-3 rounded-full backdrop-blur-md shadow-xl">
+        <button onclick="prevPage()" id="prev-btn" class="flex items-center gap-2 text-sky-200 hover:text-amber-300 transition-all text-sm font-medium disabled:opacity-40 disabled:hover:text-sky-200 cursor-pointer px-3 py-1 rounded-lg hover:bg-sky-900/50">
+            <i class="fa-solid fa-chevron-left"></i> Trang trước
+        </button>
+        <div class="h-4 w-[1px] bg-sky-700/60"></div>
+        <span id="page-indicator" class="text-xs md:text-sm text-amber-200/90 font-serif-custom tracking-wider">Bìa sách</span>
+        <div class="h-4 w-[1px] bg-sky-700/60"></div>
+        <button onclick="nextPage()" id="next-btn" class="flex items-center gap-2 text-sky-200 hover:text-amber-300 transition-all text-sm font-medium disabled:opacity-40 disabled:hover:text-sky-200 cursor-pointer px-3 py-1 rounded-lg hover:bg-sky-900/50">
+            Trang sau <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </nav>
+
+    <script>
+        // Page contents array containing all sections
+        const pagesData = [
+            // Cover inside / Spread 0
+            {
+                type: 'cover',
+                title: 'Bìa Sách',
+                html: `
+                    <div class="h-full flex flex-col justify-center items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-sky-200/50 flex items-center justify-center mb-4 text-sky-800 text-2xl font-bold shadow-inner">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <h3 class="text-2xl font-serif-custom font-bold text-sky-900 mb-2">Lời Mở Đầu</h3>
+                        <p class="text-sm text-sky-800/80 leading-relaxed max-w-md">
+                            Cuốn sách này là bức tranh thu nhỏ về chặng đường học tập, đam mê và những dự án sáng tạo của mình. Mời bạn cùng lật từng trang để khám phá nha!
+                        </p>
+                        <div class="mt-8 text-xs text-sky-600 bg-sky-200/60 px-4 py-2 rounded-full border border-sky-300">
+                            Dùng tay kéo trang để lật hoặc nhấn nút chuyển trang nha
+                        </div>
+                    </div>
+                `
+            },
+            // Page 1: Giới thiệu chung & Thông tin cá nhân
+            {
+                type: 'content',
+                title: 'Giới Thiệu Chung',
+                html: `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4 border-b border-sky-200 pb-4">
+                            <div class="profile-photo-frame w-16 h-16 rounded-full">
+                                <img src="data:image/jpeg;base64,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" alt="Ảnh chân dung Đào Thị Thùy Giang">
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-serif-custom font-bold text-sky-900">Đào Thị Thùy Giang</h3>
+                                <p class="text-xs text-sky-600 font-medium">Sinh viên Logistics và Quản lý Chuỗi cung ứng</p>
+                            </div>
+                        </div>
+                        
+                        <div class="vangogh-card p-4 rounded-xl">
+                            <h4 class="text-sm font-bold text-sky-900 mb-2 flex items-center gap-2">
+                                <i class="fa-solid fa-star text-amber-500"></i> Triết lý sống & Tính cách
+                            </h4>
+                            <p class="text-xs md:text-sm text-sky-800 leading-relaxed">
+                                Giống như những gam màu xoáy tròn đầy cảm xúc trong tranh Van Gogh, mình luôn giữ trong mình một ngọn lửa nhiệt huyết, khát khao tạo ra những giải pháp đột phá, kết hợp giữa tư duy logic kỹ thuật và cảm quan nghệ thuật tinh tế.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-white/60 p-3 rounded-lg border border-sky-200">
+                                <span class="text-sky-500 font-semibold block mb-1"><i class="fa-solid fa-location-dot"></i> Nơi sống</span>
+                                <span class="text-sky-900 font-medium">TP. Hồ Chí Minh, Vietnam</span>
+                            </div>
+                            <div class="bg-white/60 p-3 rounded-lg border border-sky-200">
+                                <span class="text-sky-500 font-semibold block mb-1"><i class="fa-solid fa-envelope"></i> Email</span>
+                                <span class="text-sky-900 font-medium">thgiang89521@gmail.com</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Page 2: Học vấn & Trường học
+            {
+                type: 'content',
+                title: 'Học Vấn',
+                html: `
+                    <div class="space-y-5">
+                        <div class="flex items-center gap-3 border-b border-sky-200 pb-3">
+                            <div class="p-3 bg-sky-200/70 text-sky-800 rounded-lg">
+                                <i class="fa-solid fa-graduation-cap text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-serif-custom font-bold text-sky-900">Hành Trình Học Tập</h3>
+                                <p class="text-xs text-sky-600">Nền tảng tri thức & định hướng tương lai</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="vangogh-card p-4 rounded-xl border-l-4 border-l-sky-500">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="text-sm font-bold text-sky-900">Đại học Khoa học Tự nhiên</h4>
+                                    <span class="text-[10px] bg-sky-200 text-sky-800 px-2 py-0.5 rounded-full font-semibold">2023 - 2027</span>
+                                </div>
+                                <p class="text-xs text-sky-700 font-medium mb-1">Cử nhân Công nghệ Thông tin</p>
+                                <p class="text-xs text-sky-800/80">Tập trung nghiên cứu Phát triển Web, Giao diện người dùng (UI/UX) và Trí tuệ nhân tạo ứng dụng.</p>
+                            </div>
+
+                            <div class="vangogh-card p-4 rounded-xl border-l-4 border-l-amber-400">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="text-sm font-bold text-sky-900">Thành tích & Học bổng</h4>
+                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-semibold">Xuất sắc</span>
+                                </div>
+                                <ul class="text-xs text-sky-800/90 space-y-1 list-disc list-inside">
+                                    <li>Học bổng khuyến khích học tập các học kỳ liên tiếp.</li>
+                                    <li>Đạt giải Nhất cuộc thi Sáng tạo Ứng dụng Sinh viên 2025.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Page 3: Sở thích & Câu lạc bộ
+            {
+                type: 'content',
+                title: 'Sở Thích & CLB',
+                html: `
+                    <div class="space-y-5">
+                        <div class="flex items-center gap-3 border-b border-sky-200 pb-3">
+                            <div class="p-3 bg-sky-200/70 text-sky-800 rounded-lg">
+                                <i class="fa-solid fa-users-rectangle text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-serif-custom font-bold text-sky-900">Hoạt Động & Đam Mê</h3>
+                                <p class="text-xs text-sky-600">Nơi kết nối và nuôi dưỡng cảm xúc</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="vangogh-card p-3 rounded-xl flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-sky-200 text-sky-800 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-laptop-code text-base"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-sky-900">Chủ nhiệm CLB Lập trình Web</h4>
+                                    <p class="text-[11px] text-sky-700">Tổ chức workshop chia sẻ kiến thức, mentor cho các thành viên khóa dưới.</p>
+                                </div>
+                            </div>
+
+                            <div class="vangogh-card p-3 rounded-xl flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-paintbrush text-base"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-sky-900">Hội họa & Ký họa số</h4>
+                                    <p class="text-[11px] text-sky-700">Yêu thích trường phái Ấn tượng, đặc biệt là phong cách hội họa của Van Gogh.</p>
+                                </div>
+                            </div>
+
+                            <div class="vangogh-card p-3 rounded-xl flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-sky-200 text-sky-800 flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-book-tanakh text-base"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-sky-900">Đọc sách & Viết lách</h4>
+                                    <p class="text-[11px] text-sky-700">Sưu tầm các tác phẩm văn học kinh điển và viết tản văn nghệ thuật.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Page 4: Dự án & Hoạt động nổi bật
+            {
+                type: 'content',
+                title: 'Dự Án Nổi Bật',
+                html: `
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 border-b border-sky-200 pb-3">
+                            <div class="p-3 bg-sky-200/70 text-sky-800 rounded-lg">
+                                <i class="fa-solid fa-diagram-project text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-serif-custom font-bold text-sky-900">Dự Án Đã Thực Hiện</h3>
+                                <p class="text-xs text-sky-600">Sản phẩm sáng tạo tiêu biểu</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="vangogh-card p-3.5 rounded-xl">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h4 class="text-xs font-bold text-sky-900 flex items-center gap-1">
+                                        <i class="fa-solid fa-star text-amber-500"></i> StarryArt Gallery
+                                    </h4>
+                                    <span class="text-[10px] bg-sky-200 text-sky-800 px-2 py-0.5 rounded font-medium">React / Tailwind</span>
+                                </div>
+                                <p class="text-[11px] text-sky-800/80 leading-relaxed">
+                                    Nền tảng trưng bày tranh trực tuyến lấy cảm hứng từ các tác phẩm nghệ thuật cổ điển kết hợp hiệu ứng tương tác hiện đại.
+                                </p>
+                            </div>
+
+                            <div class="vangogh-card p-3.5 rounded-xl">
+                                <div class="flex justify-between items-center mb-1">
+                                    <h4 class="text-xs font-bold text-sky-900 flex items-center gap-1">
+                                        <i class="fa-solid fa-star text-amber-500"></i> EduMentor AI
+                                    </h4>
+                                    <span class="text-[10px] bg-sky-200 text-sky-800 px-2 py-0.5 rounded font-medium">NodeJS / AI API</span>
+                                </div>
+                                <p class="text-[11px] text-sky-800/80 leading-relaxed">
+                                    Trợ lý ảo hỗ trợ định hướng lộ trình học tập lập trình cá nhân hóa cho sinh viên năm nhất.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Page 5: Lời kết & Liên hệ
+            {
+                type: 'content',
+                title: 'Lời Kết & Liên Hệ',
+                html: `
+                    <div class="h-full flex flex-col justify-between">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 border-b border-sky-200 pb-3">
+                                <div class="p-3 bg-sky-200/70 text-sky-800 rounded-lg">
+                                    <i class="fa-solid fa-paper-plane text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-serif-custom font-bold text-sky-900">Kết Nối Cùng Tôi</h3>
+                                    <p class="text-xs text-sky-600">Cùng nhau tạo nên những điều tuyệt vời</p>
+                                </div>
+                            </div>
+                            
+                            <p class="text-xs text-sky-800 leading-relaxed">
+                                Cảm ơn bạn đã lật giở những trang hồ sơ này. Nếu bạn có cùng đam mê về công nghệ, nghệ thuật hoặc muốn hợp tác trong các dự án sáng tạo, hãy liên hệ với mình qua:
+                            </p>
+
+                            <div class="space-y-2 text-xs">
+                                <a href="mailto:minhchau.star@edu.vn" class="flex items-center gap-3 p-3 rounded-lg bg-white/70 border border-sky-200 hover:bg-sky-100 transition-colors text-sky-900 font-medium">
+                                    <i class="fa-solid fa-envelope text-amber-500 text-base"></i> minhchau.star@edu.vn
+                                </a>
+                                <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-lg bg-white/70 border border-sky-200 hover:bg-sky-100 transition-colors text-sky-900 font-medium">
+                                    <i class="fa-brands fa-github text-sky-900 text-base"></i> github.com
+                                </a>
+                                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-lg bg-white/70 border border-sky-200 hover:bg-sky-100 transition-colors text-sky-900 font-medium">
+                                    <i class="fa-brands fa-facebook text-blue-600 text-base"></i> facebook.com
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="text-center pt-3 border-t border-sky-200">
+                            <p class="text-[11px] text-sky-700 italic font-serif-custom">"Great things are done by a series of small things brought together."</p>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        let currentPageIndex = 0;
+        const TOTAL_SHEETS = 5;
+        let dragState = null;
+        let animationTimer = null;
+
+        function generatePaintedSky() {
+            const canvas = document.getElementById('painted-sky');
+            const ctx = canvas.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+
+            function paint() {
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                canvas.width = Math.round(w * dpr);
+                canvas.height = Math.round(h * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+                const sky = ctx.createLinearGradient(0, 0, 0, h);
+                sky.addColorStop(0, '#071b46');
+                sky.addColorStop(.42, '#0b3d73');
+                sky.addColorStop(.74, '#125d86');
+                sky.addColorStop(1, '#07182e');
+                ctx.fillStyle = sky;
+                ctx.fillRect(0, 0, w, h);
+
+                // Broad layered brush currents.
+                const bands = [
+                    ['rgba(49,126,175,.28)', .16, 34, 0],
+                    ['rgba(112,180,199,.22)', .29, 27, 1.7],
+                    ['rgba(23,83,145,.42)', .47, 42, 3.1],
+                    ['rgba(77,151,182,.22)', .63, 30, 4.7]
+                ];
+                bands.forEach(([color, yRatio, width, phase]) => {
+                    ctx.beginPath();
+                    for (let x = -60; x <= w + 60; x += 12) {
+                        const y = h*yRatio + Math.sin(x/105 + phase)*24 + Math.sin(x/43 + phase)*7;
+                        if (x === -60) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    }
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = width;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                });
+
+                // Painted spirals made from many short brush strokes.
+                const swirls = [
+                    [w*.18,h*.25,115,'rgba(129,194,210,.42)'],
+                    [w*.76,h*.20,150,'rgba(77,159,203,.40)'],
+                    [w*.55,h*.49,92,'rgba(151,198,193,.25)']
+                ];
+                swirls.forEach(([cx,cy,r,color], si) => {
+                    ctx.lineCap = 'round';
+                    for (let i=0; i<95; i++) {
+                        const t = i*.22;
+                        const rr = r*(1-i/108);
+                        const x1 = cx + Math.cos(t)*rr;
+                        const y1 = cy + Math.sin(t)*rr*.43;
+                        const x2 = cx + Math.cos(t+.15)*(rr-2);
+                        const y2 = cy + Math.sin(t+.15)*(rr-2)*.43;
+                        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 3 + (i%3);
+                        ctx.stroke();
+                    }
+                });
+
+                // Glowing stars with warm painted halos.
+                const stars = [[.10,.18,7],[.27,.12,4],[.42,.25,6],[.63,.13,5],[.84,.31,8],[.93,.11,4],[.33,.40,3],[.70,.43,4]];
+                stars.forEach(([sx,sy,r]) => {
+                    const x=w*sx, y=h*sy;
+                    const glow=ctx.createRadialGradient(x,y,0,x,y,r*6);
+                    glow.addColorStop(0,'rgba(255,244,165,.98)');
+                    glow.addColorStop(.16,'rgba(250,203,73,.9)');
+                    glow.addColorStop(.48,'rgba(244,183,47,.22)');
+                    glow.addColorStop(1,'rgba(244,183,47,0)');
+                    ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(x,y,r*6,0,Math.PI*2); ctx.fill();
+                    ctx.strokeStyle='rgba(255,227,112,.55)'; ctx.lineWidth=2;
+                    for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(x,y,r*(1.8+k*.75),k*.7,Math.PI*1.25+k*.7);ctx.stroke();}
+                });
+
+                // Distant rolling silhouette along the bottom.
+                ctx.beginPath(); ctx.moveTo(0,h);
+                for(let x=0;x<=w;x+=20){
+                    const y=h*.82-Math.sin(x/92)*19-Math.sin(x/38)*7;
+                    ctx.lineTo(x,y);
+                }
+                ctx.lineTo(w,h); ctx.closePath();
+                const land=ctx.createLinearGradient(0,h*.78,0,h);
+                land.addColorStop(0,'rgba(4,27,44,.82)'); land.addColorStop(1,'#020817');
+                ctx.fillStyle=land; ctx.fill();
+            }
+
+            paint();
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(paint, 120);
+            });
+        }
+
+        function generateStarryBackground() {
+            const bg = document.getElementById('starry-bg');
+            const starCount = 35;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1.5;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                bg.appendChild(star);
+            }
+        }
+
+        function pageHTML(number, title, content, side = "right") {
+            const header = `
+                <div class="flex justify-between items-center mb-2 text-xs text-sky-500 font-semibold border-b border-sky-200 pb-1">
+                    <span>${side === "left" ? `Trang ${number}` : title}</span>
+                    <span>${side === "left" ? title : `Trang ${number}`}</span>
+                </div>`;
+            return `<div class="page-content">${header}${content}</div>`;
+        }
+
+        function coverHTML(label, title, subtitle, icon, isBack = false) {
+            if (isBack) {
+                return `
+                    <div class="book-face back book-cover shadow-2xl" aria-label="Bìa sau trống">
+                        <div class="cover-age-marks" aria-hidden="true"></div>
+                    </div>`;
+            }
+            return `
+                <div class="book-face book-cover flex flex-col justify-between p-8 md:p-12 shadow-2xl">
+                    <div class="cover-age-marks" aria-hidden="true"></div>
+                    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fde047_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    <div class="relative z-10 text-left text-xs uppercase tracking-widest text-amber-200 font-semibold border-b border-amber-300/30 pb-1">
+                        ${label}
+                    </div>
+                    <div class="relative z-10 my-auto text-center py-6">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-400/20 border-2 border-amber-300/60 flex items-center justify-center text-amber-300 text-2xl">
+                            <i class="${icon}"></i>
+                        </div>
+                        <h4 class="text-2xl font-serif-custom font-bold text-amber-200 mb-2">${title}</h4>
+                        <p class="text-xs text-sky-200/80">${subtitle}</p>
+                    </div>
+                    <div class="relative z-10 text-xs text-sky-300/80 border-t border-sky-600/50 pt-4 flex justify-between">
+                        <span>No Pain No Gain</span>
+                        <span>1860</span>
+                    </div>
+                </div>`;
+        }
+
+        function liningHTML(isBack = false) {
+            return `<div class="book-face ${isBack ? 'back' : ''} cover-lining" aria-label="Mặt trong bìa da nâu"></div>`;
+        }
+
+        function makeSheet(index) {
+            const sheet = document.createElement('div');
+            sheet.className = 'book-sheet';
+            sheet.dataset.sheet = index;
+
+            let front, back;
+
+            if (index === 0) {
+                // Sheet 0: front cover -> blank blue inside cover.
+                front = coverHTML(
+                    'Thông tin của mình',
+                    'ĐÀO THỊ THÙY GIANG',
+                    'Đêm đầy sao không chỉ ở trên bầu trời, mà còn ẩn chứa trong khát vọng của tuổi trẻ.',
+                    'fa-solid fa-palette'
+                );
+                back = liningHTML(true);
+            } else if (index === 1) {
+                // First paper sheet: opening page -> page 1.
+                front = `<div class="book-face">${pageHTML(1, 'Lời Mở Đầu', pagesData[0].html)}</div>`;
+                back = `<div class="book-face back">${pageHTML(2, 'Giới Thiệu Chung', pagesData[1].html, 'left')}</div>`;
+            } else if (index === 2) {
+                front = `<div class="book-face">${pageHTML(3, 'Học Vấn & Trường Học', pagesData[2].html)}</div>`;
+                back = `<div class="book-face back">${pageHTML(4, 'Sở Thích & CLB', pagesData[3].html, 'left')}</div>`;
+            } else if (index === 3) {
+                front = `<div class="book-face">${pageHTML(5, 'Dự Án Nổi Bật', pagesData[4].html)}</div>`;
+                back = `<div class="book-face back">${pageHTML(6, 'Lời Kết & Liên Hệ', pagesData[5].html, 'left')}</div>`;
+            } else {
+                // Last physical sheet: blank blue inside cover -> back cover.
+                front = liningHTML(false);
+                back = coverHTML(
+                    'Bìa sau',
+                    'Hết Sách',
+                    'Cảm ơn bạn đã ghé thăm không gian nghệ thuật của Nguyễn Minh Châu.',
+                    'fa-solid fa-star',
+                    true
+                );
+            }
+
+            sheet.innerHTML = front + back;
+            return sheet;
+        }
+
+        function settleLayers(raisedSheet = null) {
+            const sheets = [...document.querySelectorAll('.book-sheet')];
+            sheets.forEach((sheet, i) => {
+                if (sheet === raisedSheet) sheet.style.zIndex = String(TOTAL_SHEETS + 5);
+                else if (i < currentPageIndex) sheet.style.zIndex = String(i + 1);
+                else sheet.style.zIndex = String(TOTAL_SHEETS - i + 1);
+            });
+        }
+
+        function syncBookState() {
+            const container = document.getElementById('book-container');
+            const isClosed = currentPageIndex === 0 || currentPageIndex === TOTAL_SHEETS;
+            container.classList.toggle('closed', isClosed);
+            container.classList.toggle('opened', !isClosed);
+        }
+
+        function renderBook() {
+            const bookEl = document.getElementById('book');
+            bookEl.innerHTML = '';
+
+            // The currently active sheet must be above the sheets behind it.
+            for (let i = 0; i < TOTAL_SHEETS; i++) {
+                const sheet = makeSheet(i);
+                if (i < currentPageIndex) sheet.classList.add('flipped');
+                bookEl.appendChild(sheet);
+            }
+            settleLayers();
+            bindDragEvents();
+            syncBookState();
+            updateNavigation();
+        }
+
+        function nextPage() {
+            if (currentPageIndex >= TOTAL_SHEETS) return;
+            currentPageIndex++;
+
+            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const sheet = sheets[currentPageIndex - 1];
+            if (sheet) {
+                sheet.classList.add('flipped');
+                settleLayers(sheet);
+                clearTimeout(animationTimer);
+                animationTimer = setTimeout(() => settleLayers(), 1080);
+            }
+            syncBookState();
+            updateNavigation();
+        }
+
+        function prevPage() {
+            if (currentPageIndex <= 0) return;
+            currentPageIndex--;
+
+            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const sheet = sheets[currentPageIndex];
+            if (sheet) {
+                settleLayers(sheet);
+                sheet.classList.remove('flipped');
+                clearTimeout(animationTimer);
+                animationTimer = setTimeout(() => settleLayers(), 1080);
+            }
+            syncBookState();
+            updateNavigation();
+        }
+
+        function pointerProgress(event, state) {
+            const dx = event.clientX - state.startX;
+            return state.direction === 'forward' ? Math.max(0, Math.min(1, -dx / state.width)) : Math.max(0, Math.min(1, dx / state.width));
+        }
+
+        function startDrag(event) {
+            if (event.button !== undefined && event.button !== 0) return;
+            if (event.target.closest('a, button') || dragState) return;
+            const textSelector = '.page-content p, .page-content h1, .page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6, .page-content span, .page-content li, .page-content strong, .page-content em, .page-content blockquote, .page-content code';
+            if (event.target.closest(textSelector)) return;
+            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const rect = document.getElementById('book-container').getBoundingClientRect();
+            const onRight = event.clientX >= rect.left + rect.width / 2;
+            let direction, sheetIndex;
+            if (onRight && currentPageIndex < TOTAL_SHEETS) { direction='forward'; sheetIndex=currentPageIndex; }
+            else if (!onRight && currentPageIndex > 0) { direction='backward'; sheetIndex=currentPageIndex-1; }
+            else return;
+            const sheet = sheets[sheetIndex];
+            dragState = { pointerId:event.pointerId, direction, sheetIndex, sheet, startX:event.clientX, width:Math.max(220,rect.width/2), progress:0 };
+            sheet.classList.add('dragging');
+            settleLayers(sheet);
+            sheet.setPointerCapture?.(event.pointerId);
+            event.preventDefault();
+        }
+
+        function moveDrag(event) {
+            if (!dragState || event.pointerId !== dragState.pointerId) return;
+            dragState.progress = pointerProgress(event, dragState);
+            const angle = dragState.direction === 'forward' ? -180*dragState.progress : -180+180*dragState.progress;
+            dragState.sheet.style.transform = `rotateY(${angle}deg)`;
+            event.preventDefault();
+        }
+
+        function endDrag(event) {
+            if (!dragState || event.pointerId !== dragState.pointerId) return;
+            const state = dragState;
+            dragState = null;
+            state.sheet.classList.remove('dragging');
+            state.sheet.style.transform = '';
+            if (state.progress > .32) {
+                if (state.direction === 'forward') nextPage(); else prevPage();
+            } else settleLayers();
+        }
+
+        function bindDragEvents() {
+            const bookEl = document.getElementById('book');
+            bookEl.addEventListener('pointerdown', startDrag);
+            bookEl.addEventListener('pointermove', moveDrag);
+            bookEl.addEventListener('pointerup', endDrag);
+            bookEl.addEventListener('pointercancel', endDrag);
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const indicator = document.getElementById('page-indicator');
+
+            prevBtn.disabled = currentPageIndex === 0;
+            nextBtn.disabled = currentPageIndex === TOTAL_SHEETS;
+
+            const labels = [
+                "Bìa sách",
+                "Trang 1",
+                "Trang 2 | Trang 3",
+                "Trang 4 | Trang 5",
+                "Trang 6",
+                "Bìa sau"
+            ];
+            indicator.textContent = labels[currentPageIndex];
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextPage();
+            if (e.key === 'ArrowLeft') prevPage();
+        });
+
+        window.onload = function() {
+            generatePaintedSky();
+            generateStarryBackground();
+            renderBook();
+        };
+
+    </script>
+</body>
+</html>
