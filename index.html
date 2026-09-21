@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thùy Giang - Info</title>
+    <title>Hành Trình Ngôi Sao Xanh - Portfolio</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Playfair Display & Be Vietnam Pro -->
@@ -741,6 +741,21 @@
         filter:drop-shadow(0 16px 22px rgba(0,0,0,.32));
         margin:0 auto;
         perspective:1800px;
+    }
+    /* Fixed leather backing remains beneath the smaller paper pages. It
+       replaces the hidden final leaf, avoiding Safari's page-flash bug. */
+    .book-container.opened {
+        border:1px solid rgba(91,52,25,.82);
+        border-radius:16px;
+        background:
+            repeating-linear-gradient(174deg, transparent 0 21px, rgba(245,211,151,.035) 22px, rgba(25,8,3,.08) 23px, transparent 24px),
+            radial-gradient(ellipse at 18% 27%, rgba(13,4,1,.20), transparent 18%),
+            linear-gradient(135deg, #4b2714 0%, #6a3a1d 48%, #32160d 100%);
+        box-shadow:
+            inset 0 0 0 3px rgba(191,142,68,.24),
+            inset 0 0 0 8px rgba(30,11,5,.38),
+            inset 0 0 36px rgba(8,2,1,.58),
+            0 16px 25px rgba(0,0,0,.34);
     }
     /* The center crease belongs to the desktop two-page spread only. */
     .book-container::after,
