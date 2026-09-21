@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hành Trình Ngôi Sao Xanh - Portfolio</title>
+    <title>Thùy Giang - Info</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Playfair Display & Be Vietnam Pro -->
@@ -1385,10 +1385,26 @@
         function settleLayers(raisedSheet = null) {
             const sheets = getLeaves();
             const total = sheets.length;
+            const raisedIndex = raisedSheet ? sheets.indexOf(raisedSheet) : -1;
             sheets.forEach((sheet, i) => {
                 if (sheet === raisedSheet) sheet.style.zIndex = String(total + 5);
                 else if (i < currentPageIndex) sheet.style.zIndex = String(i + 1);
                 else sheet.style.zIndex = String(total - i + 1);
+
+                if (mobileMode) {
+                    // iOS/Safari can briefly composite the last DOM leaf above the
+                    // intended page around 90deg. Only keep the active transition
+                    // pair visible so no later page can flash through.
+                    const isCurrent = i === currentPageIndex;
+                    const isTurning = sheet === raisedSheet;
+                    const isForwardTarget = raisedIndex === currentPageIndex && i === currentPageIndex + 1;
+                    const shouldShow = isCurrent || isTurning || isForwardTarget;
+                    sheet.style.visibility = shouldShow ? 'visible' : 'hidden';
+                    sheet.style.pointerEvents = shouldShow ? 'auto' : 'none';
+                } else {
+                    sheet.style.visibility = 'visible';
+                    sheet.style.pointerEvents = '';
+                }
             });
         }
 
