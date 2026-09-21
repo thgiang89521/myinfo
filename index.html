@@ -650,7 +650,13 @@
     -webkit-user-select: text;
     touch-action: auto;
 }
-.page-content a { cursor: pointer; }
+.page-content a {
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
+    pointer-events: auto !important;
+    -webkit-user-drag: none;
+}
 .page-content ::selection {
     color: #3e2416;
     background: rgba(214, 166, 77, .38);
@@ -686,6 +692,16 @@
     box-shadow: inset 0 0 0 1px rgba(255, 244, 211, .42);
 }
 
+/* Paper leaves sit slightly inside the larger hard cover, like a real bound book. */
+.book-sheet .book-face:not(.book-cover):not(.cover-lining) {
+    top:10px;
+    bottom:10px;
+    left:6px;
+    right:6px;
+    width:calc(100% - 12px);
+    height:calc(100% - 20px);
+}
+
 /* ===== V2: CLOSED BOOK, DRAG FLIP & MOBILE LANDSCAPE ===== */
 .book-container { transition: transform .75s cubic-bezier(.22,.8,.22,1), filter .75s ease; touch-action: pan-y; }
 .book-container.closed { transform: scale(.70); filter: drop-shadow(0 20px 24px rgba(0,0,0,.34)); }
@@ -700,7 +716,103 @@
 .orientation-card { max-width:340px; padding:28px 24px; border:1px solid rgba(125,211,252,.35); border-radius:24px; background:rgba(8,47,73,.72); box-shadow:0 24px 60px rgba(0,0,0,.35); }
 .rotate-phone { animation:rotate-phone 1.8s ease-in-out infinite; }
 @keyframes rotate-phone { 0%,25% { transform:rotate(0deg); } 65%,100% { transform:rotate(90deg); } }
-@media (max-width:900px) and (orientation:portrait) { .orientation-lock { display:grid; } }
+/* Mobile uses a real one-page portrait reader instead of forcing landscape. */
+@media (max-width:768px) {
+    body {
+        min-height:100svh;
+        height:auto;
+        overflow-x:hidden;
+        padding:10px;
+        justify-content:flex-start;
+    }
+    .orientation-lock { display:none !important; }
+    header { margin:.35rem 0 .65rem !important; }
+    header > div { margin-bottom:.25rem !important; }
+    header h1 { font-size:1.45rem !important; line-height:1.15 !important; }
+    header p { font-size:.75rem !important; }
+    .book-container,
+    .book-container.closed,
+    .book-container.opened {
+        width:min(92vw, calc(72svh * .80645));
+        max-width:500px;
+        height:auto !important;
+        aspect-ratio:500 / 620;
+        transform:none;
+        filter:drop-shadow(0 16px 22px rgba(0,0,0,.32));
+        margin:0 auto;
+        perspective:1800px;
+    }
+    /* The center crease belongs to the desktop two-page spread only. */
+    .book-container::after,
+    .book-container.closed::after,
+    .book-container.opened::after { display:none !important; }
+    .book-container .book,
+    .book-container.closed .book,
+    .book-container.opened .book {
+        width:500px;
+        height:620px;
+        transform:scale(var(--mobile-book-scale, .7)) !important;
+        transform-origin:top left;
+    }
+    .mobile-leaf {
+        position:absolute;
+        inset:0;
+        width:500px;
+        height:620px;
+        transform-style:preserve-3d;
+        transform-origin:left center;
+        transition:transform 1.05s cubic-bezier(.645,.045,.355,1);
+        will-change:transform;
+        cursor:grab;
+    }
+    .mobile-leaf.turned { transform:rotateY(-180deg); }
+    .mobile-leaf.dragging { transition:none !important; cursor:grabbing; }
+    .mobile-leaf .book-face {
+        width:500px;
+        height:620px;
+        border-radius:16px;
+        border:1px solid rgba(128,83,42,.24);
+    }
+    .mobile-leaf .book-face:not(.book-cover):not(.cover-lining) {
+        top:10px;
+        bottom:10px;
+        left:7px;
+        right:7px;
+        width:486px;
+        height:600px;
+    }
+    .mobile-leaf .mobile-back-cover {
+        transform:none !important;
+        backface-visibility:hidden;
+        -webkit-backface-visibility:hidden;
+    }
+    .mobile-leaf .mobile-leaf-back {
+        transform:rotateY(180deg);
+        background:#d8c38f;
+    }
+    nav {
+        width:min(94vw,500px);
+        margin-top:.65rem !important;
+        padding:.55rem .75rem !important;
+        display:grid !important;
+        grid-template-columns:minmax(0,1fr) 1px auto 1px minmax(0,1fr);
+        align-items:center;
+        column-gap:.4rem !important;
+    }
+    nav button {
+        font-size:.78rem !important;
+        padding:.3rem .3rem !important;
+        white-space:nowrap;
+    }
+    #prev-btn { justify-self:start; }
+    #next-btn { justify-self:end; }
+    #page-indicator {
+        justify-self:center;
+        font-size:.78rem !important;
+        white-space:nowrap;
+        text-align:center;
+    }
+}
 @media (max-height:520px) and (orientation:landscape) {
     body { padding:8px; }
     header { margin:0 0 6px !important; }
@@ -842,7 +954,7 @@
             // Page 2: Học vấn & Trường học
             {
                 type: 'content',
-                title: 'Học Vấn',
+                title: 'Học tập',
                 html: `
                     <div class="space-y-5">
                         <div class="flex items-center gap-3 border-b border-sky-200 pb-3">
@@ -858,21 +970,20 @@
                         <div class="space-y-4">
                             <div class="vangogh-card p-4 rounded-xl border-l-4 border-l-sky-500">
                                 <div class="flex justify-between items-start mb-1">
-                                    <h4 class="text-sm font-bold text-sky-900">Đại học Khoa học Tự nhiên</h4>
-                                    <span class="text-[10px] bg-sky-200 text-sky-800 px-2 py-0.5 rounded-full font-semibold">2023 - 2027</span>
+                                    <h4 class="text-sm font-bold text-sky-900">University of Transport Ho Chi Minh City</h4>
+                                    <span class="text-[10px] bg-sky-200 text-sky-800 px-2 py-0.5 rounded-full font-semibold">2026 - 2030</span>
                                 </div>
-                                <p class="text-xs text-sky-700 font-medium mb-1">Cử nhân Công nghệ Thông tin</p>
-                                <p class="text-xs text-sky-800/80">Tập trung nghiên cứu Phát triển Web, Giao diện người dùng (UI/UX) và Trí tuệ nhân tạo ứng dụng.</p>
+                                <p class="text-xs text-sky-700 font-medium mb-1">Tân Sinh Viên 2026</p>
+                                <p class="text-xs text-sky-800/80">Ngành nghiên cứu, hoạch định và quản trị toàn bộ mạng lưới chuyển dịch hàng hóa, thông tin và tài chính từ nguồn cung cấp nguyên liệu thô cho đến khi sản phẩm đến tay người tiêu dùng cuối cùng</p>
                             </div>
 
                             <div class="vangogh-card p-4 rounded-xl border-l-4 border-l-amber-400">
                                 <div class="flex justify-between items-start mb-1">
-                                    <h4 class="text-sm font-bold text-sky-900">Thành tích & Học bổng</h4>
-                                    <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-semibold">Xuất sắc</span>
+                                    <h4 class="text-sm font-bold text-sky-900">Thành tích</h4>
+                                    
                                 </div>
                                 <ul class="text-xs text-sky-800/90 space-y-1 list-disc list-inside">
-                                    <li>Học bổng khuyến khích học tập các học kỳ liên tiếp.</li>
-                                    <li>Đạt giải Nhất cuộc thi Sáng tạo Ứng dụng Sinh viên 2025.</li>
+                                    <li>Chưa vào học...</li>
                                 </ul>
                             </div>
                         </div>
@@ -891,7 +1002,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-serif-custom font-bold text-sky-900">Hoạt Động & Đam Mê</h3>
-                                <p class="text-xs text-sky-600">Nơi kết nối và nuôi dưỡng cảm xúc</p>
+                                <p class="text-xs text-sky-600">Chia sẻ xem có chung đam mê hong</p>
                             </div>
                         </div>
 
@@ -1001,7 +1112,7 @@
                                 <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-lg bg-white/70 border border-sky-200 hover:bg-sky-100 transition-colors text-sky-900 font-medium">
                                     <i class="fa-brands fa-github text-sky-900 text-base"></i> github.com
                                 </a>
-                                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-lg bg-white/70 border border-sky-200 hover:bg-sky-100 transition-colors text-sky-900 font-medium">
+                                <a href="https://www.facebook.com/thuy.giang.639852?locale=vi_VN" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 p-3 rounded-lg bg-white/70 border border-sky-200 hover:bg-sky-100 transition-colors text-sky-900 font-medium">
                                     <i class="fa-brands fa-facebook text-blue-600 text-base"></i> facebook.com
                                 </a>
                             </div>
@@ -1017,6 +1128,8 @@
 
         let currentPageIndex = 0;
         const TOTAL_SHEETS = 5;
+        const MOBILE_LAST_PAGE = 7;
+        let mobileMode = window.matchMedia('(max-width: 768px)').matches;
         let dragState = null;
         let animationTimer = null;
 
@@ -1173,6 +1286,13 @@
             return `<div class="book-face ${isBack ? 'back' : ''} cover-lining" aria-label="Mặt trong bìa da nâu"></div>`;
         }
 
+        function mobileOutsideBackCoverHTML() {
+            return `
+                <div class="book-face book-cover mobile-back-cover shadow-2xl" aria-label="Mặt ngoài bìa sau">
+                    <div class="cover-age-marks" aria-hidden="true"></div>
+                </div>`;
+        }
+
         function makeSheet(index) {
             const sheet = document.createElement('div');
             sheet.className = 'book-sheet';
@@ -1194,11 +1314,11 @@
                 front = `<div class="book-face">${pageHTML(1, 'Lời Mở Đầu', pagesData[0].html)}</div>`;
                 back = `<div class="book-face back">${pageHTML(2, 'Giới Thiệu Chung', pagesData[1].html, 'left')}</div>`;
             } else if (index === 2) {
-                front = `<div class="book-face">${pageHTML(3, 'Học Vấn & Trường Học', pagesData[2].html)}</div>`;
+                front = `<div class="book-face">${pageHTML(3, 'Học Tập', pagesData[2].html)}</div>`;
                 back = `<div class="book-face back">${pageHTML(4, 'Sở Thích & CLB', pagesData[3].html, 'left')}</div>`;
             } else if (index === 3) {
                 front = `<div class="book-face">${pageHTML(5, 'Dự Án Nổi Bật', pagesData[4].html)}</div>`;
-                back = `<div class="book-face back">${pageHTML(6, 'Lời Kết & Liên Hệ', pagesData[5].html, 'left')}</div>`;
+                back = `<div class="book-face back">${pageHTML(6, 'Contact', pagesData[5].html, 'left')}</div>`;
             } else {
                 // Last physical sheet: blank blue inside cover -> back cover.
                 front = liningHTML(false);
@@ -1215,18 +1335,66 @@
             return sheet;
         }
 
+        function makeMobileLeaf(index) {
+            const leaf = document.createElement('div');
+            leaf.className = 'mobile-leaf';
+            leaf.dataset.page = index;
+
+            let face;
+            if (index === 0) {
+                face = coverHTML(
+                    'Thông tin của mình',
+                    'ĐÀO THỊ THÙY GIANG',
+                    'Đêm đầy sao không chỉ ở trên bầu trời, mà còn ẩn chứa trong khát vọng của tuổi trẻ.',
+                    'fa-solid fa-palette'
+                );
+            } else if (index >= 1 && index <= 6) {
+                const titles = [
+                    'Lời Mở Đầu',
+                    'Giới Thiệu Chung',
+                    'Học Vấn & Trường Học',
+                    'Sở Thích & CLB',
+                    'Dự Án Nổi Bật',
+                    'Lời Kết & Liên Hệ'
+                ];
+                face = `<div class="book-face">${pageHTML(index, titles[index - 1], pagesData[index - 1].html)}</div>`;
+            } else {
+                // Mobile ends on the true outside of the back cover, never its lining.
+                face = mobileOutsideBackCoverHTML();
+            }
+
+            leaf.innerHTML = face;
+            return leaf;
+        }
+
+        function getLeaves() {
+            return [...document.querySelectorAll(mobileMode ? '.mobile-leaf' : '.book-sheet')];
+        }
+
+        function lastPageIndex() {
+            return mobileMode ? MOBILE_LAST_PAGE : TOTAL_SHEETS;
+        }
+
+        function updateMobileScale() {
+            if (!mobileMode) return;
+            const container = document.getElementById('book-container');
+            const scale = container.clientWidth / 500;
+            container.style.setProperty('--mobile-book-scale', String(scale));
+        }
+
         function settleLayers(raisedSheet = null) {
-            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const sheets = getLeaves();
+            const total = sheets.length;
             sheets.forEach((sheet, i) => {
-                if (sheet === raisedSheet) sheet.style.zIndex = String(TOTAL_SHEETS + 5);
+                if (sheet === raisedSheet) sheet.style.zIndex = String(total + 5);
                 else if (i < currentPageIndex) sheet.style.zIndex = String(i + 1);
-                else sheet.style.zIndex = String(TOTAL_SHEETS - i + 1);
+                else sheet.style.zIndex = String(total - i + 1);
             });
         }
 
         function syncBookState() {
             const container = document.getElementById('book-container');
-            const isClosed = currentPageIndex === 0 || currentPageIndex === TOTAL_SHEETS;
+            const isClosed = currentPageIndex === 0 || currentPageIndex === lastPageIndex();
             container.classList.toggle('closed', isClosed);
             container.classList.toggle('opened', !isClosed);
         }
@@ -1235,26 +1403,38 @@
             const bookEl = document.getElementById('book');
             bookEl.innerHTML = '';
 
-            // The currently active sheet must be above the sheets behind it.
-            for (let i = 0; i < TOTAL_SHEETS; i++) {
-                const sheet = makeSheet(i);
-                if (i < currentPageIndex) sheet.classList.add('flipped');
-                bookEl.appendChild(sheet);
+            if (mobileMode) {
+                currentPageIndex = Math.min(currentPageIndex, MOBILE_LAST_PAGE);
+                for (let i = 0; i <= MOBILE_LAST_PAGE; i++) {
+                    const leaf = makeMobileLeaf(i);
+                    if (i < currentPageIndex) leaf.classList.add('turned');
+                    bookEl.appendChild(leaf);
+                }
+                requestAnimationFrame(updateMobileScale);
+            } else {
+                currentPageIndex = Math.min(currentPageIndex, TOTAL_SHEETS);
+                // The currently active sheet must be above the sheets behind it.
+                for (let i = 0; i < TOTAL_SHEETS; i++) {
+                    const sheet = makeSheet(i);
+                    if (i < currentPageIndex) sheet.classList.add('flipped');
+                    bookEl.appendChild(sheet);
+                }
             }
             settleLayers();
+            bindBookLinks();
             bindDragEvents();
             syncBookState();
             updateNavigation();
         }
 
         function nextPage() {
-            if (currentPageIndex >= TOTAL_SHEETS) return;
+            if (currentPageIndex >= lastPageIndex()) return;
             currentPageIndex++;
 
-            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const sheets = getLeaves();
             const sheet = sheets[currentPageIndex - 1];
             if (sheet) {
-                sheet.classList.add('flipped');
+                sheet.classList.add(mobileMode ? 'turned' : 'flipped');
                 settleLayers(sheet);
                 clearTimeout(animationTimer);
                 animationTimer = setTimeout(() => settleLayers(), 1080);
@@ -1267,11 +1447,11 @@
             if (currentPageIndex <= 0) return;
             currentPageIndex--;
 
-            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const sheets = getLeaves();
             const sheet = sheets[currentPageIndex];
             if (sheet) {
                 settleLayers(sheet);
-                sheet.classList.remove('flipped');
+                sheet.classList.remove(mobileMode ? 'turned' : 'flipped');
                 clearTimeout(animationTimer);
                 animationTimer = setTimeout(() => settleLayers(), 1080);
             }
@@ -1289,15 +1469,15 @@
             if (event.target.closest('a, button') || dragState) return;
             const textSelector = '.page-content p, .page-content h1, .page-content h2, .page-content h3, .page-content h4, .page-content h5, .page-content h6, .page-content span, .page-content li, .page-content strong, .page-content em, .page-content blockquote, .page-content code';
             if (event.target.closest(textSelector)) return;
-            const sheets = [...document.querySelectorAll('.book-sheet')];
+            const sheets = getLeaves();
             const rect = document.getElementById('book-container').getBoundingClientRect();
             const onRight = event.clientX >= rect.left + rect.width / 2;
             let direction, sheetIndex;
-            if (onRight && currentPageIndex < TOTAL_SHEETS) { direction='forward'; sheetIndex=currentPageIndex; }
+            if (onRight && currentPageIndex < lastPageIndex()) { direction='forward'; sheetIndex=currentPageIndex; }
             else if (!onRight && currentPageIndex > 0) { direction='backward'; sheetIndex=currentPageIndex-1; }
             else return;
             const sheet = sheets[sheetIndex];
-            dragState = { pointerId:event.pointerId, direction, sheetIndex, sheet, startX:event.clientX, width:Math.max(220,rect.width/2), progress:0 };
+            dragState = { pointerId:event.pointerId, direction, sheetIndex, sheet, startX:event.clientX, width:Math.max(220, mobileMode ? rect.width : rect.width/2), progress:0 };
             sheet.classList.add('dragging');
             settleLayers(sheet);
             sheet.setPointerCapture?.(event.pointerId);
@@ -1325,10 +1505,26 @@
 
         function bindDragEvents() {
             const bookEl = document.getElementById('book');
+            if (bookEl.dataset.dragBound === 'true') return;
+            bookEl.dataset.dragBound = 'true';
             bookEl.addEventListener('pointerdown', startDrag);
             bookEl.addEventListener('pointermove', moveDrag);
             bookEl.addEventListener('pointerup', endDrag);
             bookEl.addEventListener('pointercancel', endDrag);
+        }
+
+        function bindBookLinks() {
+            document.querySelectorAll('#book a[href]').forEach(link => {
+                link.setAttribute('draggable', 'false');
+                if (link.dataset.linkBound === 'true') return;
+                link.dataset.linkBound = 'true';
+
+                // A link click must never be interpreted as a page-drag gesture.
+                link.addEventListener('pointerdown', event => event.stopPropagation());
+                link.addEventListener('pointermove', event => event.stopPropagation());
+                link.addEventListener('pointerup', event => event.stopPropagation());
+                link.addEventListener('click', event => event.stopPropagation());
+            });
         }
 
         function updateNavigation() {
@@ -1337,16 +1533,11 @@
             const indicator = document.getElementById('page-indicator');
 
             prevBtn.disabled = currentPageIndex === 0;
-            nextBtn.disabled = currentPageIndex === TOTAL_SHEETS;
+            nextBtn.disabled = currentPageIndex === lastPageIndex();
 
-            const labels = [
-                "Bìa sách",
-                "Trang 1",
-                "Trang 2 | Trang 3",
-                "Trang 4 | Trang 5",
-                "Trang 6",
-                "Bìa sau"
-            ];
+            const labels = mobileMode
+                ? ["Bìa sách", "Trang 1", "Trang 2", "Trang 3", "Trang 4", "Trang 5", "Trang 6", "Bìa sau"]
+                : ["Bìa sách", "Trang 1", "Trang 2 | Trang 3", "Trang 4 | Trang 5", "Trang 6", "Bìa sau"];
             indicator.textContent = labels[currentPageIndex];
         }
 
@@ -1360,6 +1551,21 @@
             generatePaintedSky();
             generateStarryBackground();
             renderBook();
+
+            let layoutTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(layoutTimer);
+                layoutTimer = setTimeout(() => {
+                    const nextMobileMode = window.matchMedia('(max-width: 768px)').matches;
+                    if (nextMobileMode !== mobileMode) {
+                        mobileMode = nextMobileMode;
+                        currentPageIndex = 0;
+                        renderBook();
+                    } else {
+                        updateMobileScale();
+                    }
+                }, 120);
+            });
         };
 
     </script>
