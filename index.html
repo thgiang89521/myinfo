@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hành Trình Ngôi Sao Xanh - Portfolio</title>
+    <title>ThGiang - Info</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Playfair Display & Be Vietnam Pro -->
@@ -742,21 +742,6 @@
         margin:0 auto;
         perspective:1800px;
     }
-    /* Fixed leather backing remains beneath the smaller paper pages. It
-       replaces the hidden final leaf, avoiding Safari's page-flash bug. */
-    .book-container.opened {
-        border:1px solid rgba(91,52,25,.82);
-        border-radius:16px;
-        background:
-            repeating-linear-gradient(174deg, transparent 0 21px, rgba(245,211,151,.035) 22px, rgba(25,8,3,.08) 23px, transparent 24px),
-            radial-gradient(ellipse at 18% 27%, rgba(13,4,1,.20), transparent 18%),
-            linear-gradient(135deg, #4b2714 0%, #6a3a1d 48%, #32160d 100%);
-        box-shadow:
-            inset 0 0 0 3px rgba(191,142,68,.24),
-            inset 0 0 0 8px rgba(30,11,5,.38),
-            inset 0 0 36px rgba(8,2,1,.58),
-            0 16px 25px rgba(0,0,0,.34);
-    }
     /* The center crease belongs to the desktop two-page spread only. */
     .book-container::after,
     .book-container.closed::after,
@@ -1400,26 +1385,10 @@
         function settleLayers(raisedSheet = null) {
             const sheets = getLeaves();
             const total = sheets.length;
-            const raisedIndex = raisedSheet ? sheets.indexOf(raisedSheet) : -1;
             sheets.forEach((sheet, i) => {
                 if (sheet === raisedSheet) sheet.style.zIndex = String(total + 5);
                 else if (i < currentPageIndex) sheet.style.zIndex = String(i + 1);
                 else sheet.style.zIndex = String(total - i + 1);
-
-                if (mobileMode) {
-                    // iOS/Safari can briefly composite the last DOM leaf above the
-                    // intended page around 90deg. Only keep the active transition
-                    // pair visible so no later page can flash through.
-                    const isCurrent = i === currentPageIndex;
-                    const isTurning = sheet === raisedSheet;
-                    const isForwardTarget = raisedIndex === currentPageIndex && i === currentPageIndex + 1;
-                    const shouldShow = isCurrent || isTurning || isForwardTarget;
-                    sheet.style.visibility = shouldShow ? 'visible' : 'hidden';
-                    sheet.style.pointerEvents = shouldShow ? 'auto' : 'none';
-                } else {
-                    sheet.style.visibility = 'visible';
-                    sheet.style.pointerEvents = '';
-                }
             });
         }
 
